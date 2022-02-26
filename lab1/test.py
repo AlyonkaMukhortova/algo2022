@@ -37,7 +37,7 @@ def from_file():
     while n != '':
         
         if len(n) > 5:
-            l = int(n[:4], 16)
+            l = int(n[:16], 16)
             
             if not l in dict_hash:
                 list_numd.append(l)

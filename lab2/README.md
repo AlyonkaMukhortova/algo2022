@@ -1,7 +1,7 @@
 # LAB2: Random generator of graphs and checking if there're Hamiltonian and Eulerian cycles
 
 ### generate_graph.py
-Usage:
+**Usage:**
 
 python3 generate_graph.py num_of_nodes file_name
 
@@ -9,24 +9,24 @@ python3 generate_graph.py num_of_nodes file_name
 - Default num of nodes - 5
 - Num of graph edges is random from 0 to max
 
-Output:
+**Output:**
 
 binary file with generated graph
 
 ### find_cycle.py
-Usage:
+**Usage:**
 
 python3 find_cycle.py file_name
 
 - Default file_name - input_default
 
-Output:
+**Output:**
 
 In console there'll be information if there're Hamiltonian and Eulerian cycles
 
 If true, cycles will be printed
 
-Example:
+**Example:**
 
 There's no  Hamiltonian cycle
 
@@ -38,7 +38,7 @@ There's an Eulerian cycle:
 
 Default input file used in find_cycle.py
 
-Format of file:
+**Format of file:**
 
 *Node name + '\n'
 

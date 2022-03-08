@@ -6,7 +6,7 @@
 python3 generate_graph.py num_of_nodes file_name
 
 - Default file name - input
-- Default num of nodes - 5
+- Default num of nodes - 10
 - Num of graph edges is random from 0 to max
 
 **Output:**

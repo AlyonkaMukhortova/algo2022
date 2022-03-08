@@ -40,7 +40,7 @@ Default input file used in find_cycle.py
 
 **Format of file:**
 
-*Node name + '\n'
+Node name + '\n'
 
 Num of edges + '\n'
 
@@ -48,6 +48,6 @@ Num of edges + '\n'
 
 ...
 
-n-th edge node + '\n'*
+n-th edge node + '\n'
 
 **for each node of graph**

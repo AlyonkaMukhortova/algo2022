@@ -81,13 +81,15 @@ def main():
     Visited = [False] * n
     Path = []
     if (hamilton(0, graph, n, Visited, Path)):
-        print("There's a Hamilton cycle:")
+        print("There's a Hamiltonian cycle:")
         print(Path)
     else:
-        print("There's no Hamilton_cycle")
+        print("There's no Hamiltonian cycle")
     if check_ec(graph):
         print("There's an Eulerian cycle:")
         print(find_eulerian_tour(graph))
+    else:
+        print("There's no Eulerian cycle")
 
  
 

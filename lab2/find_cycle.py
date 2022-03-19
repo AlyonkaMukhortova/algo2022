@@ -46,8 +46,7 @@ def hamilton(curr, dict_graph, n, Visited, Path):
 
 
 def check_ec (dict_graph):
-    return (True if [len(x)%2 == 0 for x in dict_graph.values()] == [True] * len(dict_graph) 
-    else [x for x in dict_graph.keys() if len(dict_graph[x]) % 2 == 1])
+    return ([len(x)%2 == 0 for x in dict_graph.values()] == [True] * len(dict_graph))
  
  
 def from_file(file_name = "input_default"):

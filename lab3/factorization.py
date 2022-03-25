@@ -1,6 +1,7 @@
 import random
 import math
-#import numpy
+import argparse
+import sys
 
 
 def check_all(n, j):
@@ -14,18 +15,37 @@ def check_all(n, j):
     return True
 
 
+def witness(a, n):
+    if not n % 2:
+        return False
+    bin_n = bin(n - 1)[2:]
+    t = 0
+    x = []
+    for i in range(len(bin_n) - 1, -1, -1):
+        if bin_n[i] == '1':
+            t = len(bin_n) - 1 - i
+            break
+    u = (n - 1) // (2**t)
+    x.append(modular_exponentiation(a, u, n))
+    for i in range(1, t + 1):
+        x.append((x[i-1] ** 2) % n)
+        if x[i] == 1 and x[i-1] != 1 and x[i-1] != n - 1:
+            return True
+    if x[t] != 1:
+        return True
+    return False
+
+
 def modular_exponentiation(a, b, n):
     c = 0
     d = 1
     bin_b = bin(b)
-    for i in range(len(bin_b) - 1, -1, -1):
+    for i in range(len(bin_b) - 1, 0, -1):
         c = c * 2
-        d = (d**2) #% n
-        if bin_b[i] == 1:
+        d = (d**2) % n
+        if bin_b[i] == '1':
             c+=1
-            d =  (d * a) #% n
-        print(d)
-    print(d)
+            d =  (d * a) % n
     return d
 
 
@@ -33,34 +53,52 @@ def polland_rho(n):
     i = 1
     j = []
     res = []
-    x = random.randint(0, n - 1)
+    x = random.randint(0, n + 1)
     y = x
     k = 2
-    #la = check_all(n)
-    #print(la)
-    while not check_all(n, j):
+    while True:
         i += 1
         if x%n not in j:
             j.append(x%n)
+        else:
+            break
         x = (x**2 - 1) % n
         d = math.gcd(y - x, n)
         if d != 1 and d != n:
             if not d in res:
                 res.append(d)
-            #else:
-             #   break
-            print(j, d, res)
         if i == k:
             y = x
             k = 2 * k
-    return 0
+    print(res)
+    return res
 
 
-#polland_rho(17 * 19)
+def factor(n):
+    nums = polland_rho(n)
+    res = []
+    for num in nums:
+        i = witness(n, num)
+        if i == True: res.append(num) 
+    print(res)
+
+
 def main():
-    a = modular_exponentiation(6, 3, 4)
-    print(a)
-    print(15)
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('-d', '--dec', type=int,
+                        help='a decimal integer')
+    parser.add_argument('-e', '--hex', type=str,
+                        help='a hexadecimal integer')
+    args = vars(parser.parse_args())
+    num = 0
+    if(args['hex']):
+        num = int(args['hex'], 16)
+        factor(num)
+    elif(args['dec']):
+        num = args['dec']
+        factor(num)
 
+    
 
-main()
+if __name__ == '__main__':
+    main()

@@ -16,8 +16,10 @@ def check_all(n, j):
 
 
 def witness(a, n):
-    if not n % 2:
+    if n == 2:
         return False
+    if not n % 2:
+        return True
     bin_n = bin(n - 1)[2:]
     t = 0
     x = []
@@ -74,12 +76,21 @@ def polland_rho(n):
     return res
 
 
+def miller_rabin(n, s):
+    for i in range(0, s):
+        a = random.randint(0, n)
+        if witness(a, n):
+            return True
+        else:
+            return False
+
+
 def factor(n):
     nums = polland_rho(n)
     res = []
     for num in nums:
-        i = witness(n, num)
-        if i == True: res.append(num) 
+        i = miller_rabin(num, n//2)
+        if i == False: res.append(num) 
     print(res)
 
 
@@ -90,12 +101,14 @@ def main():
     parser.add_argument('-e', '--hex', type=str,
                         help='a hexadecimal integer')
     args = vars(parser.parse_args())
-    num = 0
+    num = 17 * 19 * 23 * 101 * 137
     if(args['hex']):
         num = int(args['hex'], 16)
         factor(num)
     elif(args['dec']):
         num = args['dec']
+        factor(num)
+    else:
         factor(num)
 
     

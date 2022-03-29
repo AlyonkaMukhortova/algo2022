@@ -1,7 +1,7 @@
 import random
 import math
 import argparse
-import sys
+import time
 
 
 def check_all(n, j):
@@ -72,7 +72,7 @@ def polland_rho(n):
         if i == k:
             y = x
             k = 2 * k
-    print(res)
+    print('All found numbers: ', res)
     return res
 
 
@@ -91,7 +91,7 @@ def factor(n):
     for num in nums:
         i = miller_rabin(num, n//2)
         if i == False: res.append(num) 
-    print(res)
+    print('Simple: ', res)
 
 
 def main():
@@ -102,6 +102,7 @@ def main():
                         help='a hexadecimal integer')
     args = vars(parser.parse_args())
     num = 17 * 19 * 23 * 101 * 137
+    start = time.time_ns()
     if(args['hex']):
         num = int(args['hex'], 16)
         factor(num)
@@ -110,6 +111,8 @@ def main():
         factor(num)
     else:
         factor(num)
+    end = time.time_ns()
+    print('Time in mcs: ', (end - start) / 1000)
 
     
 

@@ -1,0 +1,7 @@
+number = p1 * ... * pn
+All found factors (old algo)
+All found simple factors (old algo)
+All found simple factors (new algo)
+
+Old algo: once running polland-rho and miller-rabin
+New algo: running polland-rho for each of found nums except simple while it's able to find any factors

@@ -72,7 +72,7 @@ def polland_rho(n):
         if i == k:
             y = x
             k = 2 * k
-    print('All found numbers: ', res)
+    #print('All found numbers: ', res)
     return res
 
 
@@ -89,9 +89,15 @@ def factor(n):
     nums = polland_rho(n)
     res = []
     for num in nums:
-        i = miller_rabin(num, n//2)
+        i = miller_rabin(num, n)
         if i == False: res.append(num) 
-    print('Simple: ', res)
+        else: 
+            r = factor(num)
+            for l in r:
+                if not l in res:
+                    res.append(l)
+    #print('Simple: ', res)
+    return res
 
 
 def main():
@@ -101,7 +107,7 @@ def main():
     parser.add_argument('-e', '--hex', type=str,
                         help='a hexadecimal integer')
     args = vars(parser.parse_args())
-    num = 17 * 19 * 23 * 101 * 137
+    num = 3 * 17 * 19 * 23 * 101 * 137
     start = time.time_ns()
     if(args['hex']):
         num = int(args['hex'], 16)
@@ -110,8 +116,9 @@ def main():
         num = args['dec']
         factor(num)
     else:
-        factor(num)
+        res = factor(num)
     end = time.time_ns()
+    print('Found simple numbers:', res)
     print('Time in mcs: ', (end - start) / 1000)
 
     

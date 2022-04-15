@@ -71,7 +71,6 @@ def proc(first, text_len, pattern_len, text,
                                                pattern_len, text, file)
 
     count = 0
-    print(len(adrs))
     for i in range(0, len(adrs)):
         if adrs[i] in dict_adr:
             for zp in dict_adr[adrs[i]]:
@@ -97,10 +96,13 @@ def parse_args(text_file, file_name):
     args = vars(parser.parse_args())
 
     if(args['text']):
-        text_file[0] = args['text']
+        text_file = args['text']
 
     if(args['pat']):
-        file_name[0] = args['pat']
+        file_name = args['pat']
+
+
+    return file_name, text_file
 
 
 def multiprocessing_n_working(text, dict_patterns, dict_adr,
@@ -126,7 +128,7 @@ def main():
     text_file = './tests/text1.txt'
     hashes, dict_hashes, dict_adr, text, dict_patterns = [], {}, {}, [], {}
 
-    parse_args([text_file], [file_name])
+    file_name, text_file = parse_args(text_file, file_name)
     patterns_from_file(hashes, dict_hashes, dict_adr, file_name, dict_patterns)
     to_short_file(dict_adr)
 

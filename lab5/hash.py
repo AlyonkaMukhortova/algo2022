@@ -10,6 +10,18 @@ def adding_bits(message):
     return(message)
 
 
+def adding_f(message):
+    l = bin(len(message))[2:]
+    message = adding_bits(message)
+    if len(l) > 64:
+        l = l[:64]
+    else:
+        l = l.rjust(64, "0")
+    message = message + l
+    #print(len(message), message)
+    return message
+
+
 #doing blocks for hashing
 def bitting(message):
     if isinstance(message, int):
@@ -163,6 +175,34 @@ def md4_half_hash(a, b, c, d, X, m, n):
 
 def func(str, a, b, c, d, hash, passw):
     N = len(str)
+    for i in range (0, N // (16 * 32)):
+        
+        X = init_m(str[i * 512: (i + 1) * 512])
+        aa = a
+        bb = b
+        cc = c
+        dd = d
+        
+        m = 0x5A827999
+        n = 0x6ED9EBA1
+
+        aa, bb, cc, dd = md4_half_hash(a, b, c, d, X, m, n)
+        a1, b1, c1, d1 = reverse_steps(hash, X, n)
+
+        if aa == a1 and bb == b1 and cc == c1 and dd == d1:
+            
+            if hex(int(md4_hash(str, a, b, c, d), 2)) == hex(hash):
+                
+                print('found', passw)
+                
+                return True
+    
+    print('False')
+    return False
+
+
+def check(str, a, b, c, d, hash, passw, afc, bfc, cfc, dfc):
+    N = len(str)
     h = hex(int(md4_hash(str, a, b, c, d), 2))
     #print(h, hex(hash))
     for i in range (0, N // (16 * 32)):
@@ -176,10 +216,7 @@ def func(str, a, b, c, d, hash, passw):
         n = 0x6ED9EBA1
 
         aa, bb, cc, dd = md4_half_hash(a, b, c, d, X, m, n)
-        #print(aa, bb, cc, dd, '3')
-        a1, b1, c1, d1 = reverse_steps(hash, X, n)
-        #print(a1, b1, c1, d1, '2')
-        if aa == a1 and bb == b1 and cc == c1 and dd == d1:
+        if aa == afc and bb == bfc and cc == cfc and dd == dfc:
             #print('True')
             if hex(int(md4_hash(str, a, b, c, d), 2)) == hex(hash):
                 print('found', passw)

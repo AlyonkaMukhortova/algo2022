@@ -15,10 +15,10 @@ def compare(adr, zippy, file):
     return True
 
 
-def find(first, text_len, pattern_len, text, file):
+def find(first, text_len, pattern_len, text, file, processes):
     hashes, strs, adrs, zps, indexes = [], [], [], [], []
 
-    for ind in range(first, text_len - pattern_len + 1, 4):
+    for ind in range(first, text_len - pattern_len + 1, processes):
         string = text[ind:ind + pattern_len]
         str_hash = hashlib.sha1(bytes(string, encoding='utf-8')).hexdigest()
         p = bin(int(str_hash, 16))[2:37]

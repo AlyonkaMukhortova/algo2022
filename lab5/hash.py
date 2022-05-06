@@ -1,6 +1,13 @@
+from operator import le
+import hashlib
+
+
+
 def adding_bits(message):
-    message = str(message) + '1'
+    if message == "0":
+        message = ""
     lmes = len(message)
+    message = (message) + '1'
     mod = lmes % 512
     if 448 < mod:
         mod = abs(512 - mod) + 448
@@ -11,42 +18,39 @@ def adding_bits(message):
 
 
 def adding_f(message):
-    l = bin(len(message))[2:]
+    length = bin(len(message))[2:]
     message = adding_bits(message)
-    if len(l) > 64:
-        l = l[:64]
+    if len(length) > 64:
+        length = length[:64]
     else:
-        l = l.rjust(64, "0")
-    message = message + l
-    #print(len(message), message)
+        length = length.rjust(64, "0")
+    #print(length)
+    message = message + length[56:] + length[48:56] + length[40:48] + length[32:40] + length[16:32] + length[8:16] + length[:8]
     return message
 
 
-#doing blocks for hashing
 def bitting(message):
     if isinstance(message, int):
         b = bin(message)[2:]
 
     else:
         b = bin(int.from_bytes(message.encode(), 'big'))[2:]
- 
-    #print(b)
-    l = bin(len(b))[2:]
+    if b == '0':
+        b = ''
+    m = len(b) % 3
+    if m != 0:
+        b = b.rjust(len(b) + m, "0")
+    length = bin(len(b))[2:]
     message = adding_bits(b)
-    if len(l) > 64:
-        l = l[:64]
+    if len(length) > 64:
+        length = length[:64]
     else:
-        l = l.rjust(64, "0")
-    message = message + l
-    #print(len(message), message)
+        length = length.rjust(64, "0")
+    print(length)
+    message = message + length[56:] + length[48:56] + length[40:48] + length[32:40] + length[16:32] + length[8:16] + length[:8]
     return message
 
-"""
-A = "00000001001000110100010101100111"
-B = "10001001101010111100110111101111"
-C = "11111110110111001011101010011000"
-D = "01110110010101000011001000010000"
-"""
+
 A = bin(0x67452301)[2:]
 B = bin(0xEFCDAB89)[2:]
 C = bin(0x98BADCFE)[2:]
@@ -62,6 +66,7 @@ def F(X, Y, Z):
     r2 = no(int(X, 2)) & int(Z, 2)
     res = r1 | r2
     return res
+
 
 def G(X, Y, Z):
     r1 = int(X, 2) & int(Y, 2)
@@ -79,17 +84,18 @@ def H(X, Y, Z):
 def init_m(str):
     m = []
     for i in range(0, 16):
-        m.append(str[i * 32: (i + 1) * 32])
+        t = (str[i * 32: (i + 1) * 32])
+        m.append(t[24:] + t[16:24] + t[8:16] + t[:8])
     return m
 
 
 def set_md4(func, a, b, c, d, x, k, s, p):
-    a = ((int(a, 2) + func(b, c, d) + int(x[k], 2) + p)) % (2 ** 32) #[2: ]
+    a = ((int(a, 2) + func(b, c, d) + int(x[k], 2) + p)) % (2 ** 32)
     a = bin(a)[2:]
     a = a.rjust(32, '0')
     a = a[-32:]
     a = a[s:] + a[:s]
-    
+
     return a, b, c, d
 
 
@@ -107,13 +113,24 @@ def set_md4_rev(func, a, b, c, d, x, k, s, p):
     return a, b, c, d
 
 
-def reverse_steps (hash, X, n):
+def reverse_steps(hash, X, n, a, b, c, d):
+    #a, b, c, d = a[::-1], b[::-1], c[::-1], d[::-1]
+    #print(X)
     hash = bin(hash)[2:]
     hash = hash.rjust(128, "0")
-    a = hash[:32]
-    b = hash[32:64]
-    c = hash[64:96]
-    d = hash[96:]
+    aa = (hash[:32])
+    bb = (hash[32:64])
+    cc = (hash[64:96])
+    dd = (hash[96:])
+    aa = aa[24:] + aa[16:24] + aa[8:16] + aa[:8]
+    bb = bb[24:] + bb[16:24] + bb[8:16] + bb[:8]
+    cc = cc[24:] + cc[16:24] + cc[8:16] + cc[:8]
+    dd = dd[24:] + dd[16:24] + dd[8:16] + dd[:8]
+    a = bin((int(aa, 2) - int(a, 2)) % 2 ** 32)[2:].rjust(32, "0")
+    b = bin((int(bb, 2) - int(b, 2)) % 2 ** 32)[2:].rjust(32, "0")
+    c = bin((int(cc, 2) - int(c, 2)) % 2 ** 32)[2:].rjust(32, "0")
+    d = bin((int(dd, 2) - int(d, 2)) % 2 ** 32)[2:].rjust(32, "0")
+    #print(a, b, c, d)
     b, c, d, a = set_md4_rev(H, b, c, d, a, X, 15, 15, n)
     c, d, a, b = set_md4_rev(H, c, d, a, b, X, 7, 11, n)
     d, a, b, c = set_md4_rev(H, d, a, b, c, X, 11, 9, n)
@@ -129,6 +146,7 @@ def reverse_steps (hash, X, n):
     b, c, d, a = set_md4_rev(H, b, c, d, a, X, 12, 15, n)
     c, d, a, b = set_md4_rev(H, c, d, a, b, X, 4, 11, n)
     d, a, b, c = set_md4_rev(H, d, a, b, c, X, 8, 9, n)
+    #print("this", a, b, c, d)
 
     return a, b, c, d
 
@@ -172,52 +190,54 @@ def md4_half_hash(a, b, c, d, X, m, n):
 
     return a, b, c, d
 
+N = 0x6ED9EBA1
+M = 0x5A827999
+
 
 def func(str, a, b, c, d, hash, passw):
     N = len(str)
-    for i in range (0, N // (16 * 32)):
-        
+    for i in range(0, N // (16 * 32)):
+
         X = init_m(str[i * 512: (i + 1) * 512])
         aa = a
         bb = b
         cc = c
         dd = d
-        
+
         m = 0x5A827999
         n = 0x6ED9EBA1
 
         aa, bb, cc, dd = md4_half_hash(a, b, c, d, X, m, n)
-        a1, b1, c1, d1 = reverse_steps(hash, X, n)
+        a1, b1, c1, d1 = reverse_steps(hash, X, n, a, b, c, d)
+    
 
         if aa == a1 and bb == b1 and cc == c1 and dd == d1:
-            
+
             if hex(int(md4_hash(str, a, b, c, d), 2)) == hex(hash):
-                
+
                 print('found', passw)
-                
+                print(a1, b1, c1, d1)
                 return True
-    
-    print('False')
+
+    #print('False')
     return False
 
 
 def check(str, a, b, c, d, hash, passw, afc, bfc, cfc, dfc):
     N = len(str)
     h = hex(int(md4_hash(str, a, b, c, d), 2))
-    #print(h, hex(hash))
-    for i in range (0, N // (16 * 32)):
+    for i in range(0, N // (16 * 32)):
         X = init_m(str[i * 512: (i + 1) * 512])
         aa = a
         bb = b
         cc = c
         dd = d
-        
+
         m = 0x5A827999
         n = 0x6ED9EBA1
 
         aa, bb, cc, dd = md4_half_hash(a, b, c, d, X, m, n)
         if aa == afc and bb == bfc and cc == cfc and dd == dfc:
-            #print('True')
             if hex(int(md4_hash(str, a, b, c, d), 2)) == hex(hash):
                 print('found', passw)
                 return True
@@ -227,17 +247,21 @@ def check(str, a, b, c, d, hash, passw, afc, bfc, cfc, dfc):
 
 def md4_hash(str, a, b, c, d):
     N = len(str)
-    for i in range (0, N // (16 * 32)):
+    for i in range(0, N // (16 * 32)):
         X = init_m(str[i * 512: (i + 1) * 512])
-        
+        xx = []
+        for i in range(0, 16):
+            xx.append(int(X[i], 2))
+        #print(xx)
+        #print("x", X)
         aa = a
         bb = b
         cc = c
         dd = d
-        
+        #print(int(a, 2), int(b, 2), int(c, 2), int(d, 2))
         m = 0x5A827999
         n = 0x6ED9EBA1
-
+        #print("y", a, b, c, d)
         a, b, c, d = set_md4(F, a, b, c, d, X, 0, 3, 0)
         d, a, b, c = set_md4(F, d, a, b, c, X, 1, 7, 0)
         c, d, a, b = set_md4(F, c, d, a, b, X, 2, 11, 0)
@@ -273,7 +297,6 @@ def md4_hash(str, a, b, c, d):
         b, c, d, a = set_md4(G, b, c, d, a, X, 15, 13, m)
 
         a, b, c, d = set_md4(H, a, b, c, d, X, 0, 3, n)
-        #print(a, b, c, d, '1')
         d, a, b, c = set_md4(H, d, a, b, c, X, 8, 9, n)
         c, d, a, b = set_md4(H, c, d, a, b, X, 4, 11, n)
         b, c, d, a = set_md4(H, b, c, d, a, X, 12, 15, n)
@@ -289,44 +312,56 @@ def md4_hash(str, a, b, c, d):
         d, a, b, c = set_md4(H, d, a, b, c, X, 11, 9, n)
         c, d, a, b = set_md4(H, c, d, a, b, X, 7, 11, n)
         b, c, d, a = set_md4(H, b, c, d, a, X, 15, 15, n)
-        a1, b1, c1, d1 = a, b, c, d
-        """
-        b, c, d, a = set_md4_rev(H, b, c, d, a, X, 15, 15, n)
-        c, d, a, b = set_md4_rev(H, c, d, a, b, X, 7, 11, n)
-        d, a, b, c = set_md4_rev(H, d, a, b, c, X, 11, 9, n)
-        a, b, c, d = set_md4_rev(H, a, b, c, d, X, 3, 3, n)
-        b, c, d, a = set_md4_rev(H, b, c, d, a, X, 13, 15, n)
-        c, d, a, b = set_md4_rev(H, c, d, a, b, X, 5, 11, n)
-        d, a, b, c = set_md4_rev(H, d, a, b, c, X, 9, 9, n)
-        a, b, c, d = set_md4_rev(H, a, b, c, d, X, 1, 3, n)
-        b, c, d, a = set_md4_rev(H, b, c, d, a, X, 14, 15, n)
-        c, d, a, b = set_md4_rev(H, c, d, a, b, X, 6, 11, n)
-        d, a, b, c = set_md4_rev(H, d, a, b, c, X, 10, 9, n)
-        a, b, c, d = set_md4_rev(H, a, b, c, d, X, 2, 3, n)
-        b, c, d, a = set_md4_rev(H, b, c, d, a, X, 12, 15, n)
-        c, d, a, b = set_md4_rev(H, c, d, a, b, X, 4, 11, n)
-        d, a, b, c = set_md4_rev(H, d, a, b, c, X, 8, 9, n)
-        print(a, b, c, d)
-        """
+        #a1, b1, c1, d1 = a, b, c, d
+
+        #print("need", a, b, c, d)
+        #print(a, b, c, d)
         a = bin((int(a, 2) + int(aa, 2)) % 2 ** 32)[2:].rjust(32, "0")
         b = bin((int(b, 2) + int(bb, 2)) % 2 ** 32)[2:].rjust(32, "0")
         c = bin((int(c, 2) + int(cc, 2)) % 2 ** 32)[2:].rjust(32, "0")
         d = bin((int(d, 2) + int(dd, 2)) % 2 ** 32)[2:].rjust(32, "0")
-
-    return(a1 + b1 + c1 + d1)
+        #print("t", hex(int(a, 2)),hex(int(b, 2)), hex(int(c, 2)), hex(int(d, 2)))
+        a = a[24:] + a[16:24] + a[8:16] + a[:8]
+        b = b[24:] + b[16:24] + b[8:16] + b[:8]
+        c = c[24:] + c[16:24] + c[8:16] + c[:8]
+        d = d[24:] + d[16:24] + d[8:16] + d[:8]
+        #print(int(a, 2), int(b, 2), int(c, 2), int(d, 2))
+        #print("t", hex(int(a, 2)),hex(int(b, 2)), hex(int(c, 2)), hex(int(d, 2)))
+        aa = a[24:] + a[16:24] + a[8:16] + a[:8]
+        bb = b[24:] + b[16:24] + b[8:16] + b[:8]
+        cc = c[24:] + c[16:24] + c[8:16] + c[:8]
+        dd = d[24:] + d[16:24] + d[8:16] + d[:8]
+        #print("t", hex(int(aa, 2)),hex(int(bb, 2)), hex(int(cc, 2)), hex(int(dd, 2)))
+    #return(a + b + c + d)
+    return(a + b + c + d)
 
 
 def ha(passw):
     k = bitting(passw)
+    print(k)
     hash = md4_hash(k, A, B, C, D)
     hash = hex(int(hash, 2))
-    print(hash)
+    print("hash", hash)
 
 
-passw = ''
+passw = "The quick brown fox jumps over the lazy dog"
 
-ha(passw)
-k = bitting(passw)
+#ha(passw)
 
-func(k, A, B, C, D, 0x9bdccc5603b83d8e899a18577373b77b, passw)
 
+#k = bitting(passw)
+
+"""
+j = 4095
+i = 3
+first = bin(j)[2:].rjust(32, "0")
+second = bin(i)[2:].rjust(32, "0")
+str1 = str = first + second
+#print(str1)
+str = adding_f(str)
+#print(str)
+hash1 = md4_hash(str, A, B, C, D)
+print("h", hex(int(hash1, 2)))
+print("hash1", hash1[:32], hash1[32:64], hash1[64:96], hash1[96:])
+func(str, A, B, C, D, 0x56faf86b064add1b36fb353d57dbfd3d, first + second)
+"""

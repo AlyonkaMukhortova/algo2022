@@ -1,0 +1,21 @@
+Format:
+iterated num    fixed num   (dec)
+hash                        (hex)
+0   0
+0xbe195a9d98d55caa8f41b0fdfb0bbec5
+0   10
+0xe6a9677b9e0f0bf10951e5e5c20cd1fb
+10  10
+0x492a56754fa5936df2b3bb1421ca4482
+10  5
+0x56faf86b064add1b36fb353d57dbfd3d
+3   7
+0xab7750871d93549dae570a0cb48694fe
+11  7
+0x7828104b55d26d1488297454ef7c41e1
+1024    7
+0xd53aafe51646f18f6472f3bd4738ab57
+4096    3
+0xf2b635b81015d62fdff5d75ab75a4b14
+4095    3
+0xf96c1cd690fbcec05199108064dfc759

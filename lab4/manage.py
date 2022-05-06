@@ -66,9 +66,9 @@ def patterns_from_file(hashes, dict_hashes, dict_adr,
 
 
 def proc(first, text_len, pattern_len, text,
-         file, dict_adr, dict_hashes, dict_patterns):
+         file, dict_adr, dict_hashes, dict_patterns, processes):
     hashes, strs, adrs, zps, indexes = fs.find(first, text_len,
-                                               pattern_len, text, file)
+                                               pattern_len, text, file, processes)
 
     count = 0
     for i in range(0, len(adrs)):
@@ -109,17 +109,17 @@ def multiprocessing_n_working(text, dict_patterns, dict_adr,
                               hashes, dict_hashes):
     with open('short.bin', "rb") as file:
         p = []
-
-        for j in range(0, 4):
+        num = 1
+        for j in range(0, num):
             p.append(0)
             p[j] = Process(target=proc, args=(j, len(text),
                            len(dict_patterns[hashes[0]][0]), text, file,
-                           dict_adr, dict_hashes, dict_patterns))
+                           dict_adr, dict_hashes, dict_patterns, num))
 
-        for j in range(0, 4):
+        for j in range(0, num):
             p[j].start()
 
-        for j in range(0, 4):
+        for j in range(0, num):
             p[j].join()
 
 

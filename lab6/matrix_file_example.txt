@@ -1,0 +1,8 @@
+matrix A
+here's space for your matrix A
+attention! Dimensions of 2 matrix should be same!
+please, input your square matrix here
+matrix B
+don't change lines with names of matrix
+don't change format of file
+input nums
